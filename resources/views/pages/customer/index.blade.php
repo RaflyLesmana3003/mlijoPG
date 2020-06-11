@@ -46,6 +46,10 @@
                     <input type="text" class="form-control" id="tenantid" placeholder="tenant id">
                   </div>
                   <div class="form-group">
+                    <label for="discount">amount</label>
+                    <input type="text" class="form-control" id="amount" placeholder="ex 10000">
+                  </div>
+                  <div class="form-group">
                     <label for="discount">Discount (%)</label>
                     <input type="text" class="form-control" id="discount" placeholder="ex 5%">
                   </div>
@@ -71,6 +75,7 @@
                 <table class="table table-striped">
                   <thead>
                     <tr>
+                      <th>tgl</th>
                       <th>customer id</th>
                       <th>Product id</th>
                       <th>Tenant id</th>
@@ -81,6 +86,7 @@
                   <tbody>
                     @foreach ($transaction as $ts)
                     <tr>
+                      <td>{{$ts->created_at}}</td>
                       <td>{{$ts->customer_id}}</td>
                       <td>{{$ts->product_id}}</td>
                       <td>{{$ts->tenant_id}}</td>
@@ -112,7 +118,7 @@
         {
             _method: 'POST',
             _token: '{{ csrf_token() }}',
-            amount: 10000,
+            amount:  $('input#amount').val(),
             discount: $('input#discount').val(),
             note: $('input#note').val(),
             customer_id: $('input#customerid').val(),

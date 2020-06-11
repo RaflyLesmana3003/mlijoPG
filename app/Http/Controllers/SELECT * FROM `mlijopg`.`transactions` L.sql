@@ -1,1 +1,0 @@
-SELECT * FROM `mlijopg`.`transactions` LIMIT 1000;

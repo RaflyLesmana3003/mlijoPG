@@ -6,6 +6,8 @@ use App\Model\Permintaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests;
+use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Middleware;
 
 class PermintaanController extends Controller
 {
@@ -52,9 +54,42 @@ class PermintaanController extends Controller
      * @param  \App\Model\Permintaan  $permintaan
      * @return \Illuminate\Http\Response
      */
-    public function show(Permintaan $permintaan)
+    public function show(Request $request)
     {
+        // dd($request->input('bank'));
         //
+        $checkbankaccount = Http::withBasicAuth(config('services.midtrans_iris.CreatorApiKey'), config('services.midtrans_iris.CreatorPassword'))->withHeaders([
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json'
+        ])->get('https://app.midtrans.com/iris/api/v1/account_validation?bank='.$request->input('bank').'&account='.$request->input('rekening'));
+
+        $data = $checkbankaccount->json();
+
+        if (isset($data['errors'])) {
+            # code...
+            echo "error";
+        }else{  
+               
+            dd($data);
+            $cretapayout = Http::withBasicAuth(config('services.midtrans_iris.CreatorApiKey'), config('services.midtrans_iris.CreatorPassword'))->withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post('https://app.midtrans.com/iris/api/v1/payouts', [
+                "payouts"=> array([
+                    "beneficiary_name"=> "Jon Snow",
+                    "beneficiary_account"=> "1172993826",
+                    "beneficiary_bank"=> "bni",
+                    "beneficiary_email"=> "beneficiary@example.com",
+                    "amount"=> "100000.00",
+                    "notes"=> "Payout April 17"
+                ])
+                   
+
+                ]);
+            $payout = $cretapayout->json();
+            dd($payout);
+    
+        }
     }
 
     /**

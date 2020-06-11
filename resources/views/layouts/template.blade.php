@@ -190,12 +190,12 @@
               <p>tenant</p>
             </a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a href="{{url('admin/')}}" class="nav-link">
               <i class="nav-icon fas fa-home"></i>
               <p>admin</p>
             </a>
-          </li>
+          </li> -->
           
         </ul>
       </nav>

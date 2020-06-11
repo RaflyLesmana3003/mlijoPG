@@ -260,7 +260,7 @@
     <script>
     function submitForm() {
         // Kirim request ajax
-        $.post("{{ route('transaction.store') }}",
+        $.post("{{ route('withdrawal') }}",
         {
             _method: 'POST',
             _token: '{{ csrf_token() }}',

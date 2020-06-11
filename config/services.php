@@ -39,5 +39,10 @@ return [
         'isSanitized'   => env('MIDTRANS_IS_SANITIZED', true),
         'is3ds'         => env('MIDTRANS_IS_3DS', true),                
     ],
+    'midtrans_iris' => [
+        // Midtrans server key
+        'CreatorApiKey'     => env('MIDTRANS_IRIS_CREATOR_API_KEY'),    
+        'CreatorPassword'     => env('MIDTRANS_IRIS_CREATOR_PASSWORD'),    
+    ],
 
 ];
