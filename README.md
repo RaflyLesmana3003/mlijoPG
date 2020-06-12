@@ -20,3 +20,13 @@ you can change midtrans key in `.env` file
 
     MIDTRANS_IRIS_CREATOR_API_KEY=
     MIDTRANS_IRIS_CREATOR_PASSWORD=
+    
+## midtrans notification setup
+your website must be hosting already
+1. go to `production environment -> settings -> configuration`
+2. add `base_url/notification/handler`
+
+## midtrans iris notification setup
+your website must be hosting already
+1. go to `settings -> notification`
+2. add `base_url/iris/notification/handler`
