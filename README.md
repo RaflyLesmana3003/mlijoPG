@@ -10,3 +10,13 @@
 ## feature
 1. midtrans payment gateway
 2. midtrans iris create payout (creators)
+
+## setup
+you can change midtrans key in `.env` file
+    
+    MIDTRANS_CLIENTKEY=
+    MIDTRANS_SERVERKEY=
+    MIDTRANS_IS_PRODUCTION= true
+
+    MIDTRANS_IRIS_CREATOR_API_KEY=
+    MIDTRANS_IRIS_CREATOR_PASSWORD=
