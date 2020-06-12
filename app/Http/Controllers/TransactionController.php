@@ -10,46 +10,31 @@ use Veritrans_Notification;
 
 class TransactionController extends Controller
 {
-    /**
-     * Make request global.
-     *
-     * @var \Illuminate\Http\Request
-     */
     protected $request;
  
-    /**
-     * Class constructor.
-     *
-     * @param \Illuminate\Http\Request $request User Request
-     *
-     * @return void
-     */
     public function __construct(Request $request)
     {
         $this->request = $request;
  
-        // Set midtrans configuration
+        // NOTE Set midtrans configuration
         Veritrans_Config::$serverKey = config('services.midtrans.serverKey');
         Veritrans_Config::$isProduction = config('services.midtrans.isProduction');
         Veritrans_Config::$isSanitized = config('services.midtrans.isSanitized');
         Veritrans_Config::$is3ds = config('services.midtrans.is3ds');
     }
  
-    /**
-     * Submit donation.
-     *
-     * @return array
-     */
+    
     public function submitDonation()
     { 
-        
+      
+        // NOTE send request snap payment type
         \DB::transaction(function(){
           if ($this->request->discount) {
             $total = floatval($this->request->amount)-floatval($this->request->amount)*floatval($this->request->discount)/100;
           }else {
             $total = floatval($this->request->amount);
           }
-            // Save donasi ke database
+            // NOTE Save transaksi ke database
           $idd= now().$total.now().$this->request->customer_id.$this->request->tenant_id;
 
             $transaction = Transaction::create([
@@ -61,7 +46,7 @@ class TransactionController extends Controller
                 'note' => $this->request->note,
             ]);
  
-            // Buat transaksi ke midtrans kemudian save snap tokennya.
+            // NOTE Buat transaksi ke midtrans kemudian save snap tokennya.
             $payload = [
                 'transaction_details' => [
                     'order_id'      => $idd,
@@ -70,8 +55,6 @@ class TransactionController extends Controller
                 'customer_details' => [
                     'first_name'    => $transaction->customer_id,
                     'email'         => "coba@gmail.com",
-                    // 'phone'         => '08888888888',
-                    // 'address'       => '',
                 ],
                 'item_details' => [
                     [
@@ -86,20 +69,14 @@ class TransactionController extends Controller
             $transaction->snap_token = $snapToken;
             $transaction->save();
  
-            // Beri response snap token
+            // NOTE Beri response snap token
             $this->response['snap_token'] = $snapToken;
         });
  
         return response()->json($this->response);
     }
  
-    /**
-     * Midtrans notification handler.
-     *
-     * @param Request $request
-     * 
-     * @return void
-     */
+    // ANCHOR receive notication from midtrans
     public function notificationHandler(Request $request)
     {
         $notif = new Veritrans_Notification();

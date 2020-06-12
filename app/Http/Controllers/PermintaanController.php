@@ -25,9 +25,10 @@ class PermintaanController extends Controller
         $checkBank = $checkBankAccount->json();
 
         if (isset($checkBank['errors'])) {
-            # code...
+            // NOTE error handling if bank doesnt exist
             return abort(500, 'Bank account doesnt exist');
         }else{
+            // NOTE create payout by requesting in midtrans iris api
             $cretapayout = Http::withBasicAuth(config('services.midtrans_iris.CreatorApiKey'), config('services.midtrans_iris.CreatorPassword'))->withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
@@ -39,9 +40,9 @@ class PermintaanController extends Controller
                     "amount"=> $request->input("jumlah"),
                     "notes"=> $request->input("note"),
                 ])
-                   
-
-                ]);
+            ]);
+            
+            // NOTE save withdraw transaction to database
             $payout = $cretapayout->json();
             if (isset($payout['payouts'][0]['reference_no'])) {
                 DB::table('withdrawals')->insert(
@@ -56,16 +57,18 @@ class PermintaanController extends Controller
                     "created_at"=> now(),
                     ]
                 );
-            }
             return 'permintaan withdrawal berhasil';
-
+            }
         }
     }
 
+    // ANCHOR receive notication from midtrans iris
     public function notificationHandler(Request $request)
     {
+        // NOTE get data woth reference from database
         $withdrawal = Withdrawal::where('reference_no', '=', $request->reference_no)->firstOrFail();
-
+        
+        // NOTE set database status
         $status = $request->status;
         if ($status == "queued") {
             $withdrawal->setQueued();
