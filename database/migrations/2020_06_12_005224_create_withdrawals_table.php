@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMlijosTable extends Migration
+class CreateWithdrawalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,19 @@ class CreateMlijosTable extends Migration
      */
     public function up()
     {
-        Schema::create('mlijos', function (Blueprint $table) {
+        Schema::create('withdrawals', function (Blueprint $table) {
             $table->id();
-            $table->string('nama')->nullable();
-            $table->string('bank')->nullable();
             $table->string('atasnama')->nullable();
             $table->string('rekening')->nullable();
-            $table->string('saldo')->nullable();
+            $table->string('bank')->nullable();
+            $table->string('email')->nullable();
+            $table->string('amount')->nullable();
+            $table->string('notes')->nullable();
+            $table->string('status')->nullable();
+            $table->string('reference_no')->nullable();
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      *
@@ -31,6 +33,6 @@ class CreateMlijosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('mlijos');
+        Schema::dropIfExists('withdrawals');
     }
 }

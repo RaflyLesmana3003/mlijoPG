@@ -181,13 +181,13 @@
           <li class="nav-item">
             <a href="{{url('/')}}" class="nav-link">
               <i class="nav-icon fas fa-users"></i>
-              <p>customer</p>
+              <p>Customer</p>
             </a>
           </li>
           <li class="nav-item">
             <a href="{{url('tenant/')}}" class="nav-link">
               <i class="nav-icon fas fa-user"></i>
-              <p>tenant</p>
+              <p>Creator</p>
             </a>
           </li>
           <!-- <li class="nav-item">

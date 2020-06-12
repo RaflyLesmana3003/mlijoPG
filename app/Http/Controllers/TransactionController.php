@@ -111,7 +111,7 @@ class TransactionController extends Controller
           $orderId = $notif->order_id;
           $fraud = $notif->fraud_status;
 
-          $donation = Transaction::where('kode', '=', $orderId)->firstOrFail();
+          $transaksi = Transaction::where('kode', '=', $orderId)->firstOrFail();
           if ($transaction == 'capture') {
  
             // For credit card transaction, we need to check whether transaction is challenge by FDS or not
@@ -121,11 +121,11 @@ class TransactionController extends Controller
                 // TODO set payment status in merchant's database to 'Challenge by FDS'
                 // TODO merchant should decide whether this transaction is authorized or not in MAP
                 // $donation->addUpdate("Transaction order_id: " . $orderId ." is challenged by FDS");
-                $donation->setPending();
+                $transaksi->setPending();
               } else {
                 // TODO set payment status in merchant's database to 'Success'
                 // $donation->addUpdate("Transaction order_id: " . $orderId ." successfully captured using " . $type);
-                $donation->setSuccess();
+                $transaksi->setSuccess();
               }
  
             }
@@ -135,32 +135,32 @@ class TransactionController extends Controller
  
             // TODO set payment status in merchant's database to 'Settlement'
             // $donation->addUpdate("Transaction order_id: " . $orderId ." successfully transfered using " . $type);
-            $donation->setSuccess();
+            $transaksi->setSuccess();
  
           } elseif($transaction == 'pending'){
  
             // TODO set payment status in merchant's database to 'Pending'
             // $donation->addUpdate("Waiting customer to finish transaction order_id: " . $orderId . " using " . $type);
-            $donation->setPending();
+            $transaksi->setPending();
  
           } elseif ($transaction == 'deny') {
             dd("sad");
  
             // TODO set payment status in merchant's database to 'Failed'
             // $donation->addUpdate("Payment using " . $type . " for transaction order_id: " . $orderId . " is Failed.");
-            $donation->setFailed();
+            $transaksi->setFailed();
  
           } elseif ($transaction == 'expire') {
  
             // TODO set payment status in merchant's database to 'expire'
             // $donation->addUpdate("Payment using " . $type . " for transaction order_id: " . $orderId . " is expired.");
-            $donation->setExpired();
+            $transaksi->setExpired();
  
           } elseif ($transaction == 'cancel') {
  
             // TODO set payment status in merchant's database to 'Failed'
             // $donation->addUpdate("Payment using " . $type . " for transaction order_id: " . $orderId . " is canceled.");
-            $donation->setFailed();
+            $transaksi->setFailed();
  
           }
  

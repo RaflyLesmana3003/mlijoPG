@@ -14,5 +14,6 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'finish',
         'notification/handler',
+        'iris/notification/handler',
      ];
 }

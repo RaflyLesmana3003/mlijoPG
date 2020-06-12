@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Permintaan;
+use App\Model\Withdrawal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests;
@@ -11,118 +12,70 @@ use GuzzleHttp\Middleware;
 
 class PermintaanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    
+    // ANCHOR withdrawal function
     public function store(Request $request)
     {
-        //
-        DB::table('permintaans')->insert([
-            'mlijo_id' => "1",
-            'total' => 1000,
-            'status' => "menunggu",
-            'created_at' => now(),
-       ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Model\Permintaan  $permintaan
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request)
-    {
-        // dd($request->input('bank'));
-        //
-        $checkbankaccount = Http::withBasicAuth(config('services.midtrans_iris.CreatorApiKey'), config('services.midtrans_iris.CreatorPassword'))->withHeaders([
+        // NOTE check if bank account exist
+        $checkBankAccount = Http::withBasicAuth(config('services.midtrans_iris.CreatorApiKey'), config('services.midtrans_iris.CreatorPassword'))->withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json'
         ])->get('https://app.midtrans.com/iris/api/v1/account_validation?bank='.$request->input('bank').'&account='.$request->input('rekening'));
 
-        $data = $checkbankaccount->json();
+        $checkBank = $checkBankAccount->json();
 
-        if (isset($data['errors'])) {
+        if (isset($checkBank['errors'])) {
             # code...
-            echo "error";
-        }else{  
-               
-            dd($data);
+            return abort(500, 'Bank account doesnt exist');
+        }else{
             $cretapayout = Http::withBasicAuth(config('services.midtrans_iris.CreatorApiKey'), config('services.midtrans_iris.CreatorPassword'))->withHeaders([
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ])->post('https://app.midtrans.com/iris/api/v1/payouts', [
                 "payouts"=> array([
-                    "beneficiary_name"=> "Jon Snow",
-                    "beneficiary_account"=> "1172993826",
-                    "beneficiary_bank"=> "bni",
-                    "beneficiary_email"=> "beneficiary@example.com",
-                    "amount"=> "100000.00",
-                    "notes"=> "Payout April 17"
+                    "beneficiary_name"=> $request->input("atasnama"),
+                    "beneficiary_account"=> $request->input("rekening"),
+                    "beneficiary_bank"=> $request->input("bank"),
+                    "amount"=> $request->input("jumlah"),
+                    "notes"=> $request->input("note"),
                 ])
                    
 
                 ]);
             $payout = $cretapayout->json();
-            dd($payout);
-    
+            if (isset($payout['payouts'][0]['reference_no'])) {
+                DB::table('withdrawals')->insert(
+                    [
+                    "atasnama"=> $request->input("atasnama"),
+                    "rekening"=> $request->input("rekening"),
+                    "bank"=> $request->input("bank"),
+                    "amount"=> $request->input("jumlah"),
+                    "notes"=> $request->input("note"),
+                    "status"=> $payout['payouts'][0]['status'],
+                    "reference_no"=> $payout['payouts'][0]['reference_no'],
+                    "created_at"=> now(),
+                    ]
+                );
+            }
+            return 'permintaan withdrawal berhasil';
+
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Model\Permintaan  $permintaan
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Permintaan $permintaan)
+    public function notificationHandler(Request $request)
     {
-        //
+        $withdrawal = Withdrawal::where('reference_no', '=', $request->reference_no)->firstOrFail();
+
+        $status = $request->status;
+        if ($status == "queued") {
+            $withdrawal->setQueued();
+        }elseif ($status == "processed") {
+            $withdrawal->setprocessed();
+        }elseif ($status == "completed") {
+            $withdrawal->setcompleted();
+        }elseif ($status == "failed") {
+            $withdrawal->setfailed();
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Model\Permintaan  $permintaan
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Permintaan $permintaan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Model\Permintaan  $permintaan
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Permintaan $permintaan)
-    {
-        //
-    }
 }

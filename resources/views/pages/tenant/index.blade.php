@@ -5,7 +5,6 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0 text-dark">SALDO = Rp.50.000</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -194,15 +193,19 @@
                     </div>
                   <div class="form-group">
                     <label for="productid">atas nama</label>
-                    <input type="text" class="form-control" id="atasnama" placeholder="jhon doe">
+                    <input type="text" class="form-control" id="atasnama" placeholder="jhon doe" required>
                   </div>
                   <div class="form-group">
                     <label for="tenantid">no. rekening</label>
-                    <input type="text" class="form-control" id="rekening" placeholder="413215342">
+                    <input type="text" class="form-control" id="rekening" placeholder="413215342" required>
                   </div>
                   <div class="form-group">
                     <label for="discount">jumlah penarikan</label>
-                    <input type="text" class="form-control" id="jumlah" placeholder="10000">
+                    <input type="number" class="form-control" id="jumlah" placeholder="10000" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="discount">note</label>
+                    <input type="text" class="form-control" id="note" placeholder="uang withdrawal" required>
                   </div>
                 </div>
                 <!-- /.card-body -->
@@ -221,24 +224,40 @@
               <div class="card-body p-0">
                 <table class="table table-striped">
                   <thead>
-                    <tr>
+                  <tr>
                       <th style="width: 10px">tgl</th>
+                      <th>atasnama</th>
                       <th>bank</th>
                       <th>no rekening</th>
-                      <th>atasnama</th>
                       <th>total</th>
+                      <th>note</th>
                       <th style="width: 40px">status</th>
+                      <th>reference_no</th>
                     </tr>
                   </thead>
                   <tbody>
+                  @foreach ($transaction as $ts)
                     <tr>
-                      <td>24/04/2001</td>
-                      <td>BCA</td>
-                      <td>0812381293</td>
-                      <td>jhon doe</td>
-                      <td>Rp.50.000</td>
-                      <td><span class="badge bg-success">disetujui</span></td>
+                      <td>{{$ts->created_at}}</td>
+                      <td>{{$ts->atasnama}}</td>
+                      <td>{{$ts->bank}}</td>
+                      <td>{{$ts->rekening}}</td>
+                      <td>{{$ts->amount}}</td>
+                      <td>{{$ts->notes}}</td>
+                      <td>
+                      @if($ts->status == "queued")
+                      <span class="badge bg-dark">{{$ts->status}}</span>
+                      @elseif($ts->status == "processed")
+                      <span class="badge bg-info">{{$ts->status}}</span>
+                      @elseif($ts->status == "completed")
+                      <span class="badge bg-success">{{$ts->status}}</span>
+                      @elseif($ts->status == "failed")
+                      <span class="badge bg-danger">{{$ts->status}}</span>
+                      @endif
+                     </td>
+                      <td>{{$ts->reference_no}}</td>
                     </tr>
+                    @endforeach
                   </tbody>
                 </table>
               </div>
@@ -256,7 +275,6 @@
         src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
-    <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
     <script>
     function submitForm() {
         // Kirim request ajax
@@ -268,9 +286,9 @@
             bank: $('select#bank').val(),
             atasnama: $('input#atasnama').val(),
             rekening: $('input#rekening').val(),
+            note: $('input#note').val(),
         },
         function (data, status) {
-            snap.pay(data.snap_token, {
                 // Optional
                 onSuccess: function (result) {
                     location.reload();
@@ -283,7 +301,6 @@
                 onError: function (result) {
                     location.reload();
                 }
-            });
         });
         return false;
     }

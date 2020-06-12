@@ -22,6 +22,7 @@ class CreateTransactionsTable extends Migration
             $table->string('note')->nullable();
             $table->string('status')->default('pending');
             $table->string('snap_token')->nullable();
+            $table->string('kode')->nullable();
             $table->timestamps();
         });
     }

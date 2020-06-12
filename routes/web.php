@@ -19,15 +19,8 @@ Route::get('/', function(){
     return view('pages/customer/index',['transaction' => $transaction]);
 })->name('welcome');
 
-Route::get('/tenant', function(){
-    return view('pages/tenant/index');
-});
-Route::post('/withdrawal', 'PermintaanController@show')->name('withdrawal');
 
-Route::get('/admin', function(){
-    return view('pages/admin/index');
-});
-
+// NOTE midtrans transaction
 Route::post('/finish', function(){
     return redirect()->route('welcome');
 })->name('transaction.finish');
@@ -35,5 +28,11 @@ Route::post('/finish', function(){
 Route::post('/transaction/store', 'TransactionController@submitDonation')->name('transaction.store');
 Route::post('/notification/handler', 'TransactionController@notificationHandler')->name('notification.handler');
 
-Route::get('/qqq', 'PermintaanController@show');
- 
+
+// NOTE midtrans iris
+Route::get('/tenant', function(){
+    $transaction = DB::table('withdrawals')->orderBy('created_at','DESC')->get();
+    return view('pages/tenant/index',['transaction' => $transaction]);
+});
+Route::post('/withdrawal', 'PermintaanController@store')->name('withdrawal');
+Route::post('/iris/notification/handler', 'PermintaanController@notificationHandler')->name('iris.handler');
