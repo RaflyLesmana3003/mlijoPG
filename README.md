@@ -6,3 +6,7 @@
 3. `composer install`
 4. `php artisan migrate`
 5. then `php artisan migrate`
+
+## feature
+1. midtrans payment gateway
+2. midtrans iris create payout (creators)
