@@ -36,3 +36,11 @@ Route::get('/tenant', function(){
 });
 Route::post('/withdrawal', 'PermintaanController@store')->name('withdrawal');
 Route::post('/iris/notification/handler', 'PermintaanController@notificationHandler')->name('iris.handler');
+
+// NOTE midtrans iris
+Route::get('/admin', function(){
+    $transaction = DB::table('withdrawals')->orderBy('created_at','DESC')->get();
+    return view('pages/admin/index',['transaction' => $transaction]);
+});
+Route::post('/approve', 'PermintaanController@approval')->name('approval');
+Route::post('/reject', 'PermintaanController@reject')->name('reject');

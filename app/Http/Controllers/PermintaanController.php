@@ -81,4 +81,33 @@ class PermintaanController extends Controller
         }
     }
 
+    // ANCHOR withdrawal function
+    public function approval(Request $request)
+    {
+            // NOTE create payout by requesting in midtrans iris api
+            $cretapayout = Http::withBasicAuth(config('services.midtrans_iris.ApproverApiKey'), config('services.midtrans_iris.ApproverPassword'))->withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post('https://app.midtrans.com/iris/api/v1/payouts/approve', [
+                    "reference_no"=> $request->input("atasnama"),
+                    "otp"=> $request->input("rekening"),
+            ]);
+    }
+
+     // ANCHOR withdrawal function
+     public function reject(Request $request)
+     {
+             // NOTE create payout by requesting in midtrans iris api
+             $cretapayout = Http::withBasicAuth(config('services.midtrans_iris.ApproverApiKey'), config('services.midtrans_iris.ApproverPassword'))->withHeaders([
+                 'Accept' => 'application/json',
+                 'Content-Type' => 'application/json'
+             ])->post('https://app.midtrans.com/iris/api/v1/payouts/reject', [
+                     "reference_nos"=> $request->input("reference_no"),
+                     "reject_reason"=> $request->input("reason"),
+             ]);
+            $payout = $cretapayout->json();
+            dd($payout);
+
+     }
+
 }

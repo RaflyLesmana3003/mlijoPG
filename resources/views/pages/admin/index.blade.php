@@ -31,29 +31,47 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0">
-                <table class="table table-striped">
+              <table class="table table-striped">
                   <thead>
-                    <tr>
-                      <th>tgl</th>
+                  <tr>
+                      <th style="width: 10px">tgl</th>
+                      <th>atasnama</th>
                       <th>bank</th>
                       <th>no rekening</th>
-                      <th>atasnama</th>
                       <th>total</th>
-                      <th>status</th>
+                      <th>note</th>
+                      <th style="width: 40px">status</th>
+                      <th>reference_no</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
+                  @foreach ($transaction as $ts)
                     <tr>
-                      <td>24/04/2001</td>
-                      <td>BCA</td>
-                      <td>0812381293</td>
-                      <td>jhon doe</td>
-                      <td>Rp.50.000</td>
+                      <td>{{$ts->created_at}}</td>
+                      <td>{{$ts->atasnama}}</td>
+                      <td>{{$ts->bank}}</td>
+                      <td>{{$ts->rekening}}</td>
+                      <td>{{$ts->amount}}</td>
+                      <td>{{$ts->notes}}</td>
                       <td>
-                      <button class="btn btn-success">approve</button>
-                      <button class="btn btn-danger">eject</button>
+                      @if($ts->status == "queued")
+                      <span class="badge bg-dark">{{$ts->status}}</span>
+                      @elseif($ts->status == "processed")
+                      <span class="badge bg-info">{{$ts->status}}</span>
+                      @elseif($ts->status == "completed")
+                      <span class="badge bg-success">{{$ts->status}}</span>
+                      @elseif($ts->status == "failed")
+                      <span class="badge bg-danger">{{$ts->status}}</span>
+                      @endif
+                     </td>
+                      <td>{{$ts->reference_no}}</td>
+                      <td>
+                      <button class="btn btn-success" onclick="submitApprove('{{$ts->reference_no}}');">approve</button>
+                      <button class="btn btn-danger" onclick="submitReject('{{$ts->reference_no}}');">reject</button>
                     </td>
                     </tr>
+                    @endforeach
                   </tbody>
                 </table>
               </div>
@@ -66,23 +84,51 @@
         <!-- /.row -->
       </div><!-- /.container-fluid -->
     </section>
-
     <script
         src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
     <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
     <script>
-    function submitForm() {
+    function submitApprove(reference) {
+      // console.log(reference);
+
         // Kirim request ajax
-        $.post("{{ route('transaction.store') }}",
+        $.post("{{ route('approval') }}",
         {
             _method: 'POST',
             _token: '{{ csrf_token() }}',
-            jumlah: $('input#jumlah').val(),
-            bank: $('select#bank').val(),
-            atasnama: $('input#atasnama').val(),
-            rekening: $('input#rekening').val(),
+            reference_no: reference,
+            otp: $('select#bank').val(),
+        },
+        function (data, status) {
+            snap.pay(data.snap_token, {
+                // Optional
+                onSuccess: function (result) {
+                    location.reload();
+                },
+                // Optional
+                onPending: function (result) {
+                    location.reload();
+                },
+                // Optional
+                onError: function (result) {
+                    location.reload();
+                }
+            });
+        });
+        return false;
+    }
+    function submitReject(reference) {
+      // console.log(reference);
+      
+        // Kirim request ajax
+        $.post("{{ route('reject') }}",
+        {
+            _method: 'POST',
+            _token: '{{ csrf_token() }}',
+            reference_no: reference,
+            reason: "test",
         },
         function (data, status) {
             snap.pay(data.snap_token, {

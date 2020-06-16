@@ -43,6 +43,8 @@ return [
         // Midtrans server key
         'CreatorApiKey'     => env('MIDTRANS_IRIS_CREATOR_API_KEY'),    
         'CreatorPassword'     => env('MIDTRANS_IRIS_CREATOR_PASSWORD'),    
+        'ApproverApiKey'     => env('MIDTRANS_IRIS_APPROVER_API_KEY'),    
+        'ApproverPassword'     => env('MIDTRANS_IRIS_APPROVER_PASSWORD'),    
     ],
 
 ];
