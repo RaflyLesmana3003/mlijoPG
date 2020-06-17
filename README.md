@@ -24,7 +24,8 @@ you can change midtrans key in `.env` file
     MIDTRANS_IRIS_APPROVER_API_KEY=
     MIDTRANS_IRIS_APPROVER_PASSWORD=
 ## dokumentasi
-    https://docs.google.com/presentation/d/1pSHbV7xhLhjy6VAFg970agH6Y9PBBmXOWimX7Y9o2Js/edit?usp=sharing
+[Dokumantasi](https://docs.google.com/presentation/d/1pSHbV7xhLhjy6VAFg970agH6Y9PBBmXOWimX7Y9o2Js/edit?usp=sharing)
+   
     
 ## midtrans notification setup
 your website must be hosting already
