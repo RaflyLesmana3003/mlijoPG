@@ -26,11 +26,19 @@
           <div class="col-md-12">
             <!-- /.card -->
             <div class="card">
+            <div class="col-md-12">
+                <a href="/withdrawal/cetak_pdf" class="btn btn-primary" target="_blank">CETAK PDF</a>
+                <a href="/withdrawal/cetak_excel" class="btn btn-success my-3" target="_blank">EXPORT EXCEL</a>
+		
+              </div>
+              
               <div class="card-header">
+           
                 <h3 class="card-title">penarikan</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body p-0">
+              
               <table class="table table-striped">
                   <thead>
                   <tr>
@@ -57,6 +65,10 @@
                       <td>
                       @if($ts->status == "queued")
                       <span class="badge bg-dark">{{$ts->status}}</span>
+                      @elseif($ts->status == "approved")
+                      <span class="badge bg-success">{{$ts->status}}</span>
+                      @elseif($ts->status == "rejected")
+                      <span class="badge bg-danger">{{$ts->status}}</span>
                       @elseif($ts->status == "processed")
                       <span class="badge bg-info">{{$ts->status}}</span>
                       @elseif($ts->status == "completed")

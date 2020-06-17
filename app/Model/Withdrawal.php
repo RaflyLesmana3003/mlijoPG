@@ -17,6 +17,18 @@ class Withdrawal extends Model
         $this->attributes['status'] = 'queued';
         self::save();
     }
+
+    public function setapproved()
+    {
+        $this->attributes['status'] = 'approved';
+        self::save();
+    }
+
+    public function setrejected()
+    {
+        $this->attributes['status'] = 'rejected';
+        self::save();
+    }
  
     /**
      * Set status to Success

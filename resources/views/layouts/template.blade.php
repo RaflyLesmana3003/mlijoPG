@@ -193,7 +193,7 @@
           <li class="nav-item">
             <a href="{{url('admin/')}}" class="nav-link">
               <i class="nav-icon fas fa-home"></i>
-              <p>admin</p>
+              <p>Approver</p>
             </a>
           </li>
           

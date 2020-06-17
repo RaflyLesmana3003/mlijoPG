@@ -44,3 +44,8 @@ Route::get('/admin', function(){
 });
 Route::post('/approve', 'PermintaanController@approval')->name('approval');
 Route::post('/reject', 'PermintaanController@reject')->name('reject');
+
+
+// cetak pdf
+Route::get('/withdrawal/cetak_pdf', 'PermintaanController@cetak_pdf');
+Route::get('/withdrawal/cetak_excel', 'PermintaanController@cetak_excel');

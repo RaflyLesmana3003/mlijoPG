@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests;
 use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Middleware;
+use PDF;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\WithdrawExport;
+use App\Http\Controllers\Controller;
 
 class PermintaanController extends Controller
 {
@@ -65,6 +69,7 @@ class PermintaanController extends Controller
     // ANCHOR receive notication from midtrans iris
     public function notificationHandler(Request $request)
     {
+        // dd($request);
         // NOTE get data woth reference from database
         $withdrawal = Withdrawal::where('reference_no', '=', $request->reference_no)->firstOrFail();
         
@@ -72,6 +77,10 @@ class PermintaanController extends Controller
         $status = $request->status;
         if ($status == "queued") {
             $withdrawal->setQueued();
+        }elseif ($status == "approved") {
+            $withdrawal->setapproved();
+        }elseif ($status == "rejected") {
+            $withdrawal->setrejected();
         }elseif ($status == "processed") {
             $withdrawal->setprocessed();
         }elseif ($status == "completed") {
@@ -89,9 +98,11 @@ class PermintaanController extends Controller
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json'
             ])->post('https://app.midtrans.com/iris/api/v1/payouts/approve', [
-                    "reference_no"=> $request->input("atasnama"),
-                    "otp"=> $request->input("rekening"),
+                    "reference_nos"=> $request->input("atasnama"),
+                    // "otp"=> $request->input("rekening"),
             ]);
+            $payout = $cretapayout->json();
+            dd($payout);
     }
 
      // ANCHOR withdrawal function
@@ -102,12 +113,25 @@ class PermintaanController extends Controller
                  'Accept' => 'application/json',
                  'Content-Type' => 'application/json'
              ])->post('https://app.midtrans.com/iris/api/v1/payouts/reject', [
-                     "reference_nos"=> $request->input("reference_no"),
+                     "reference_nos"=> [$request->input("reference_no")],
                      "reject_reason"=> $request->input("reason"),
              ]);
             $payout = $cretapayout->json();
             dd($payout);
 
      }
+
+     public function cetak_pdf()
+        {
+            $pegawai = Withdrawal::all();
+        
+            $pdf = PDF::loadview('pages/admin/cetak_pdf',['pegawai'=>$pegawai]);
+            return $pdf->download('laporan-pegawai-pdf');
+        }
+
+    public function cetak_excel()
+        {
+            return Excel::download(new WithdrawExport, 'transaksipenarikan.xlsx');
+        }
 
 }
