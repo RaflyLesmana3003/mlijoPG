@@ -30,3 +30,8 @@ your website must be hosting already
 your website must be hosting already
 1. go to `settings -> notification`
 2. add `base_url/iris/notification/handler`
+
+## source 
+1. midtrans https://azishapidin.com/blog/menggunakan-payment-gateway-midtrans-di-laravel/
+2. export excel https://www.malasngoding.com/export-excel-laravel/
+3. export pdf https://www.malasngoding.com/membuat-laporan-pdf-dengan-dompdf-laravel/
